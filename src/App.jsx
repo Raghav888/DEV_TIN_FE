@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Body } from "./Body";
-import { Login } from "./Login";
-import { Profile } from "./Profile";
+import { Body } from "./Components/Body";
+import { Login } from "./Components/Login";
+import { Profile } from "./Components/Profile";
 
 function App() {
   return (
