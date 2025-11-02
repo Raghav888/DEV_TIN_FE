@@ -26,7 +26,6 @@ export const Login = () => {
       // to store the user data in redux store
       dispatch(addUser(data.data));
       navigate("/");
-      na;
     } catch (err) {
       console.error("Login failed:", err);
     }
