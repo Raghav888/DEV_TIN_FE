@@ -1,14 +1,29 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BASE_URL } from "../constants/url";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { removeUser } from "../utils/userSlice";
 
 export const Navbar = () => {
   // to access user state from redux store, it suscribes to the store
   const user = useSelector((state) => state.user);
-
-  const handleLogout = () => {
-    // implement logout functionality here
-    browser.cookies.remove({ name: "token", url: BASE_URL });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        BASE_URL + "/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      // clear the redux store
+      dispatch(removeUser());
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
   return (
     <>
