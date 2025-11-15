@@ -31,7 +31,8 @@ export const Feed = () => {
   }, [page]);
   return (
     <div className="flex justify-center p-8">
-      {feeds && <UserCard feed={feeds[1]} />}
+      {feeds && feeds.length > 0 && <UserCard feed={feeds[0]} />}
+      {feeds && feeds.length === 0 && <p>No feeds available.</p>}
     </div>
   );
 };
