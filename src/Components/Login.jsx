@@ -57,7 +57,7 @@ export const Login = () => {
             />
           </fieldset>
           <div className="card-actions justify-end">
-            <p className="text-red-500"> Error: {error}</p>
+            {error && <p className="text-red-500"> Error: {error}</p>}
             <button
               className="btn btn-primary"
               onClick={() => handleLoginClick()}
