@@ -1,5 +1,5 @@
-export const UserCard = ({ feed }) => {
-  const { firstName, gender, about, age, photoUrl, lastName } = feed;
+export const UserCard = ({ feed, handleSendRequest = () => {} }) => {
+  const { firstName, gender, about, age, photoUrl, lastName, _id } = feed;
   return (
     <div className="card bg-base-300 w-96 shadow-sm">
       <figure>
@@ -13,8 +13,18 @@ export const UserCard = ({ feed }) => {
         <p>About: {about}</p>
         <p>Age: {age}</p>
         <div className="card-actions justify-center ">
-          <button className="btn btn-primary mr-2">Ignore</button>
-          <button className="btn btn-secondary">Interested</button>
+          <button
+            className="btn btn-primary mr-2"
+            onClick={() => handleSendRequest(_id, "ignored")}
+          >
+            Ignore
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => handleSendRequest(_id, "interested")}
+          >
+            Interested
+          </button>
         </div>
       </div>
     </div>
