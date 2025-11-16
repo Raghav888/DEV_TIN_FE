@@ -3,6 +3,9 @@ import { BASE_URL } from "../constants/url";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { removeUser } from "../utils/userSlice";
+import { removeConnections } from "../utils/connectionSlice";
+import { removeFeeds } from "../utils/feedSlice";
+import { removeRequests } from "../utils/requestSlice";
 
 export const Navbar = () => {
   // to access user state from redux store, it suscribes to the store
@@ -20,6 +23,9 @@ export const Navbar = () => {
       );
       // clear the redux store
       dispatch(removeUser());
+      dispatch(removeConnections());
+      dispatch(removeFeeds());
+      dispatch(removeRequests());
       navigate("/login");
     } catch (err) {
       console.error("Logout failed:", err);

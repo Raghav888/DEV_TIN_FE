@@ -6,8 +6,11 @@ const connectionSlice = createSlice({
         addConnections: (state, action) => {
             return action.payload;
         },
+        removeConnections: (state, action) => {
+            return null;
+        }
     }
 });
 
-export const { addConnections } = connectionSlice.actions;
+export const { addConnections, removeConnections } = connectionSlice.actions;
 export default connectionSlice.reducer;
