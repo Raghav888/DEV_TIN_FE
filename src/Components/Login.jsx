@@ -31,7 +31,7 @@ export const Login = () => {
         );
         const data = response.data;
         // to store the user data in redux store
-        dispatch(addUser(data.data));
+        dispatch(addUser(data.data._doc));
         navigate("/");
       } catch (err) {
         setError(err.response?.data?.message || "Login failed");
