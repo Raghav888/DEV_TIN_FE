@@ -1,34 +1,38 @@
-import { use, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { createSocketConnection } from "../utils/socket";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { socket } from "../utils/socket";
 import { useSelector } from "react-redux";
 
 export const Chat = () => {
   const { toUserId } = useParams();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const navigate = useNavigate();
 
   const user = useSelector((state) => state.user);
 
   useEffect(() => {
-    const socket = createSocketConnection();
     // as soon as page loads, join the chat room
-    socket.emit("joinChat", { toUserId, fromUserId: user?._id });
+    socket.emit("joinChat", { toUserId });
 
     socket.on("receiveMessage", (messageData) => {
       setMessages((prevMessages) => [...prevMessages, messageData]);
     });
+
+    socket.on("connect_error", (err) => {
+      console.error("Socket error:", err.message);
+      navigate("/login");
+    });
+
     return () => {
-      socket.disconnect();
+      socket.off("receiveMessage");
+      socket.off("connect_error");
     };
   }, [user, toUserId]);
 
   const sendMessage = () => {
-    const socket = createSocketConnection();
     socket.emit("sendMessage", {
       toUserId,
-      firstName: user?.firstName,
-      fromUserId: user?._id,
       message: newMessage,
     });
 
