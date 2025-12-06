@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { socket } from "../utils/socket";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { BASE_URL } from "../constants/url";
 
 export const Chat = () => {
   const { toUserId } = useParams();
@@ -11,24 +13,47 @@ export const Chat = () => {
 
   const user = useSelector((state) => state.user);
 
-  useEffect(() => {
-    // as soon as page loads, join the chat room
-    socket.emit("joinChat", { toUserId });
+  const fetchMessages = async () => {
+    try {
+      const response = await axios.get(BASE_URL + `/chats/chat/${toUserId}`, {
+        withCredentials: true,
+      });
+      const data = response.data?.messages.map((resp) => ({
+        message: resp.text,
+        fromUserId: resp.sender._id,
+        firstName: resp.sender.firstName,
+      }));
+      setMessages(data);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  };
 
+  useEffect(() => {
+    // Attach receiveMessage listener ONCE
     socket.on("receiveMessage", (messageData) => {
-      setMessages((prevMessages) => [...prevMessages, messageData]);
+      setMessages((prev) => [...prev, messageData]);
     });
 
     socket.on("connect_error", (err) => {
-      console.error("Socket error:", err.message);
       navigate("/login");
     });
 
+    //Wait for socket connection BEFORE joinChat
+    socket.on("connect", () => {
+      socket.emit("joinChat", { toUserId });
+    });
+
+    //Fetch old messages AFTER joinChat
+    fetchMessages();
+
+    // Cleanup
     return () => {
       socket.off("receiveMessage");
       socket.off("connect_error");
+      socket.off("connect");
     };
-  }, [user, toUserId]);
+  }, [toUserId]);
 
   const sendMessage = () => {
     socket.emit("sendMessage", {
@@ -42,11 +67,11 @@ export const Chat = () => {
   return (
     <div className="w-1/2 mx-auto border border-gray-600 mt-10 h-[70vh] flex flex-col">
       <h1 className="p-5 border-b border-gray-600">Chat</h1>
-      <div className="flex-1 overflow-scroll p-5">
+      <div className="flex-1 overflow-y-auto flex flex-col-reverse p-5">
         {messages.length === 0 ? (
           <p className="text-center text-gray-500">No messages yet.</p>
         ) : (
-          messages.map((msg, index) => (
+          [...messages].reverse().map((msg, index) => (
             <div
               key={index}
               className={
